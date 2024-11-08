@@ -11,6 +11,7 @@ output: html_document
 ```{r load-packages, message=FALSE}
 library(tidyverse) 
 library(ggplot2)
+library(dplyr)
 ```
 
 ```{r diamon_rename}
@@ -27,7 +28,30 @@ diamonds <- diamonds %>% rename(
 ## Exercise 1
 
 ```{r}
-# Do some preliminary investigations & cleaning
+diamonds <- diamonds %>%
+  filter(length_mm > 0, width_mm > 0, depth_mm > 0) 
+diamonds
+
+summarise(diamonds,
+          max_price = max(price),
+          min_price = min(price),
+          mean_price = mean(price),
+          max_carat = max(carat),
+          min_carat = min(carat),
+)
+          
+
+
+
+ggplot(data = diamonds,
+       mapping = aes(x = price, y = carat)) +
+  geom_point()
+labs(
+  x = "Price",
+  y = "Carat",
+  title = "Price vs Carat",
+)
+
 
 
 
@@ -42,14 +66,18 @@ diamonds <- diamonds %>% rename(
 diamonds <- diamonds %>%
   mutate(table_mm = table_pct * width_mm / 100)
 
-# Overall table_mm arithmetic mean?
+summarise(diamonds, mean_table_mm = mean(table_mm))
 
 
 
 
 
 
-# table_mm arithmetic mean within each clarity category
+diamonds %>%
+  group_by(clarity) %>%
+  summarise(diamonds, mean_table_mm_by_clarity = mean(table_mm)) %>%
+  select(clarity, mean_table_mm_by_clarity)
+
 
 
 
@@ -58,10 +86,18 @@ diamonds <- diamonds %>%
 
 ```
 
-_Add your comment here_
+The mean is the same for each clarity.
 
 ```{r}
-# calculate the arithmetic mean across all numeric variables
+summarise(diamonds,
+  mean_carat = mean(carat),
+  mean_depth_pct = mean(depth_pct),
+  mean_price = mean(price),
+  mean_length = mean(length_mm),
+  mean_width = mean(width_mm),
+  mean_depth = mean(depth_mm),
+  mean_table = mean(table_mm)
+)
 
 
 
